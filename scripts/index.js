@@ -17,21 +17,22 @@ function createCard(linkValue, titleValue) {
   cardElement.querySelector(".card__image").alt = titleValue;
   cardElement.querySelector(".card__title").textContent = titleValue;
 
-  const deleteButton = cardElement.querySelector(".card__delete-button");
-
-  deleteButton.addEventListener("click", function () {
-    const cardItem = deleteButton.closest(".card");
-    cardItem.remove();
-  });
+  cardElement.querySelector(".card__delete-button").addEventListener("click", function () {
+      deleteCard(cardElement);
+    });
 
   return cardElement;
 }
 
-function addCard() {
+function deleteCard(cardElement) {
+  cardElement.remove();
+}
+
+function addCards() {
   initialCards.forEach(function (cardValue) {
     const newCard = createCard(cardValue.link, cardValue.name);
     cardList.append(newCard);
   });
 }
 
-addCard();
+addCards();
