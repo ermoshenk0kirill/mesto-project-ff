@@ -17,15 +17,14 @@ function createCard(linkValue, titleValue) {
   cardElement.querySelector(".card__image").alt = titleValue;
   cardElement.querySelector(".card__title").textContent = titleValue;
 
-  cardElement.querySelector(".card__delete-button").addEventListener("click", function () {
-      deleteCard(cardElement);
-    });
-
+  cardElement.querySelector(".card__delete-button").addEventListener("click", deleteCard);
+  
   return cardElement;
 }
 
-function deleteCard(cardElement) {
-  cardElement.remove();
+function deleteCard(evt) {
+  const cardToDelete = evt.target.closest(".card");
+  cardToDelete.remove();
 }
 
 function addCards() {
