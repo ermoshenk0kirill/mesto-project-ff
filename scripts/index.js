@@ -10,7 +10,7 @@
 const cardTemplate = document.querySelector("#card-template").content;
 const cardList = document.querySelector(".places__list");
 
-function createCard(linkValue, titleValue) {
+function createCard(linkValue, titleValue, deleteCard) {
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
 
   cardElement.querySelector(".card__image").src = linkValue;
@@ -29,7 +29,7 @@ function deleteCard(evt) {
 
 function addCards() {
   initialCards.forEach(function (cardValue) {
-    const newCard = createCard(cardValue.link, cardValue.name);
+    const newCard = createCard(cardValue.link, cardValue.name, deleteCard);
     cardList.append(newCard);
   });
 }
