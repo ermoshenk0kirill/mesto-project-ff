@@ -43,11 +43,10 @@ const formElement = document.querySelector(".popup__form"); // Воспольз�
 const nameInput = document.querySelector(".popup__input_type_name"); // Воспользуйтесь инструментом .querySelector()
 const jobInput = document.querySelector(".popup__input_type_description"); // Воспользуйтесь инструментом .querySelector()
 
-// Обработчик «отправки» формы, хотя пока
-// она никуда отправляться не будет
+
 function handleFormSubmit(evt) {
   evt.preventDefault(); 
-  
+
   const resName = nameInput.value;
   const resJob = jobInput.value; // Получите значение полей jobInput и nameInput из свойства value
 
@@ -60,11 +59,10 @@ function handleFormSubmit(evt) {
   const popupButton = evt.target.closest(".popup");
   closeButton(popupButton);
 }
-// Прикрепляем обработчик к форме:
-// он будет следить за событием “submit” - «отправка»
+
 formElement.addEventListener("submit", handleFormSubmit);
 
-// обраюотчик закрытия попапа по крестику
+// обработчик закрытия попапа по крестику
 buttonPopupClose.forEach(function (buttonPopupClose) {
   buttonPopupClose.addEventListener("click", function () {
     const popupClose = buttonPopupClose.closest(".popup");
@@ -88,7 +86,7 @@ document.addEventListener("mousedown", function (evt) {
   }
 });
 
-// Добавляем обработчик события для открытия попапа редактирования профиля
+//обработчик события для открытия попапа редактирования профиля
 editButton.addEventListener("click", function () {
   popupOpen(profileEditPopup);
 });
