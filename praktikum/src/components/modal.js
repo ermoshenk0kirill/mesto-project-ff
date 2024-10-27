@@ -13,17 +13,17 @@ function handlOverlayClose(evt) {
 }
 
 // Функция для открытия попапа
-function popupOpen(evt) {
-  evt.classList.add("popup_opened");
+function popupOpen(modalWindow) {
+  modalWindow.classList.add("popup_opened");
   document.addEventListener("keydown", handleEscClose);
-  evt.addEventListener("mousedown", handlOverlayClose);
+  modalWindow.addEventListener("mousedown", handlOverlayClose);
 }
 
 //главная функция закрытия попапа
-function closePopup(evt) {
-  evt.classList.remove("popup_opened");
+function closePopup(modalWindow) {
+  modalWindow.classList.remove("popup_opened");
   document.removeEventListener("keydown", handleEscClose);
-  evt.removeEventListener("mousedown", handlOverlayClose);
+  modalWindow.removeEventListener("mousedown", handlOverlayClose);
 }
 
 export { popupOpen, closePopup };

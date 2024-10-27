@@ -39,11 +39,11 @@ const jobInput = document.querySelector(".popup__input_type_description");
 const profileTitle = document.querySelector(".profile__title");
 const profileJob = document.querySelector(".profile__description");
 
+const imagePopup = imageCard.querySelector(".popup__image");
+const imageTitle = imageCard.querySelector(".popup__caption");
+
 //Функция открывания изображения
 function popupImageOpen(linkValue, titleValue) {
-  const imagePopup = imageCard.querySelector(".popup__image");
-  const imageTitle = imageCard.querySelector(".popup__caption");
-
   imagePopup.src = linkValue;
   imagePopup.alt = titleValue;
   imageTitle.textContent = titleValue;
@@ -73,12 +73,17 @@ buttonPopupCloses.forEach(function (buttonPopupCloses) {
 });
 
 //обработчик закрытия попапа по клику на оверлей
-document.addEventListener("mousedown", function (evt) {
-  const openedPopup = document.querySelector(".popup_opened");
-  if (evt.target === openedPopup) {
-    closePopup(openedPopup);
-  }
-});
+function handlOverlayClose(popup) {
+  popup.addEventListener("mousedown", function (evt) {
+    if (evt.target === popup) {
+      closePopup(popup);
+    }
+  });
+}
+
+handlOverlayClose(profileEditPopup);
+handlOverlayClose(profileNewCard);
+handlOverlayClose(imageCard);
 
 //обработчик события для открытия попапа редактирования профиля
 editButton.addEventListener("click", function () {
