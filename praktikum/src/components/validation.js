@@ -24,10 +24,15 @@ const hideInputError = (formElement, inputElement, config) => {
 const isValid = (formElement, inputElement, config) => {
   const regex = /[^\wа-яёА-ЯЁ\-\s]/gi;
   let errorMessage = "";
-  
+
   if (inputElement.type === "url") {
     if (!inputElement.validity.valid) {
-      showInputError(formElement, inputElement, inputElement.validationMessage, config);
+      showInputError(
+        formElement,
+        inputElement,
+        inputElement.validationMessage,
+        config
+      );
     } else {
       hideInputError(formElement, inputElement, config);
     }
@@ -36,8 +41,7 @@ const isValid = (formElement, inputElement, config) => {
       errorMessage = inputElement.validationMessage;
       showInputError(formElement, inputElement, errorMessage, config);
     } else if (regex.test(inputElement.value)) {
-      errorMessage =
-        inputElement.dataset.errorMessage;;
+      errorMessage = inputElement.dataset.errorMessage;
       showInputError(formElement, inputElement, errorMessage, config);
     } else {
       hideInputError(formElement, inputElement, config);
@@ -47,7 +51,9 @@ const isValid = (formElement, inputElement, config) => {
 
 // функция проверки состояния кнопки
 const setEventListener = (formElement, config) => {
-  const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
+  const inputList = Array.from(
+    formElement.querySelectorAll(config.inputSelector)
+  );
   const buttonElement = formElement.querySelector(config.submitButtonSelector);
   inputList.forEach((inputElement) => {
     inputElement.addEventListener("input", () => {

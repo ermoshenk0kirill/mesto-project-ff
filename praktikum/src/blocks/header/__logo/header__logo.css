@@ -11,3 +11,28 @@
     margin: 0 0 0 7px;
   }
 }
+
+.profile__edit-icon {
+  position: absolute;
+  background-image: url('../../../images/vectorr.svg');
+  height: 120px;
+  width: 120px;
+  border-radius: 50%;
+  border: none;
+  background-color: #0000;
+  opacity: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+
+.profile__edit-icon:hover {
+  transition: ease-in-out 0.2s;
+  background-color: #000000CC;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.popup__content.popup__form-avatar {
+  min-height: 0;
+}

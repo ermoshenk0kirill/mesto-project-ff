@@ -1,4 +1,4 @@
-import { createCard, likeCard } from "./components/card.js";
+import { createCard } from "./components/card.js"; //likeCard
 import { popupOpen, closePopup } from "./components/modal.js";
 import {
   enableValidation,
@@ -6,7 +6,16 @@ import {
   toggleButtonState,
 } from "./components/validation.js";
 
-import {profileInfo, newCards, reloadProfile, addNewCard, deleteCard} from "./components/api.js"
+import {
+  profileInfo,
+  newCards,
+  reloadProfile,
+  addNewCard,
+  deleteCard,
+  likeCard,
+  unlikeCard,
+  updateAvatar,
+} from "./components/api.js";
 
 import "./pages/index.css";
 
@@ -23,6 +32,8 @@ const config = {
 const formEditCard = document.forms["edit-profile"]; // переменная отвечающая за форму редактирования профиля
 const formCreateCard = document.forms["new-place"];
 
+const formAvatar = document.forms["new-avatar"];
+
 // @todo: Вывести карточки на страницу
 const cardTemplate = document.querySelector("#card-template").content;
 const cardList = document.querySelector(".places__list");
@@ -35,6 +46,10 @@ const buttonPopupCloses = document.querySelectorAll(".popup__close"); //кноп
 const profileEditPopup = document.querySelector(".popup_type_edit"); // окно редактирования профиля
 const profileNewCard = document.querySelector(".popup_type_new-card"); // окно добавления карточки
 const imageCard = document.querySelector(".popup_type_image"); // окно изображения
+
+const profileAvatarPopup = document.querySelector(".popup_type_avatar");
+const avatarEditButton = document.querySelector(".profile__edit-icon");
+const avatarForm = profileAvatarPopup.querySelector(".popup__form");
 
 // переменная формы для создания новой карточки
 const formNewCard = document.forms["new-place"];
@@ -56,9 +71,9 @@ const imageTitle = imageCard.querySelector(".popup__caption");
 
 // переменные для API
 
-const titleImage = document.querySelector('.profile__image');
-const titleName = document.querySelector('.profile__title');
-const titleJob = document.querySelector('.profile__description');
+const titleImage = document.querySelector(".profile__image");
+const titleName = document.querySelector(".profile__title");
+const titleJob = document.querySelector(".profile__description");
 
 let currentUserId;
 
@@ -72,28 +87,35 @@ Promise.all([profileInfo(), newCards()])
 
     currentUserId = res._id;
 
-    cardsArray.forEach(res => {
-      cardList.append(createCard(
-        cardTemplate,
-        res.link,
-        res.name,
-        res.likes,
-        deleteCard,
-        likeCard,
-        popupImageOpen,
-        currentUserId,
-        res.owner._id,
-        res.id
-      ));
+    cardsArray.forEach((res) => {
+      cardList.append(
+        createCard(
+          cardTemplate,
+          res.link,
+          res.name,
+          res.likes,
+          deleteCard,
+          likeCard,
+          unlikeCard,
+          popupImageOpen,
+          currentUserId,
+          res.owner._id,
+          res._id
+        )
+      );
     });
-  }
-)
-  .catch((error) => {
-    console.log(`Ошибка:${error}`);
-  }
-)
+  })
+  .catch((error) => console.log(`Error: ${error.message}`));
 
 //--------------------------------------
+
+function renderLoading(isLoading, button) {
+  if (isLoading) {
+    button.textContent = "Сохранение...";
+  } else {
+    button.textContent = "Сохранить";
+  }
+}
 
 //Функция открывания изображения
 function popupImageOpen(linkValue, titleValue) {
@@ -110,8 +132,10 @@ function handlNewCard(evt) {
   const nameValue = nameNewCard.value;
   const linkValue = linkNewCard.value;
 
+  const loadingButton = evt.target.querySelector(".popup__button");
+  renderLoading(true, loadingButton);
   addNewCard(nameValue, linkValue)
-    .then(data => {
+    .then((data) => {
       const newCard = createCard(
         cardTemplate,
         data.link,
@@ -119,16 +143,18 @@ function handlNewCard(evt) {
         data.likes,
         deleteCard,
         likeCard,
+        unlikeCard,
         popupImageOpen,
         currentUserId,
         data.owner._id,
         data._id
-      )
+      );
       cardList.prepend(newCard);
       closePopup(profileNewCard);
       formNewCard.reset();
-    }
-    )
+    })
+    .catch((error) => console.log(`Error: ${error.message}`))
+    .finally(() => renderLoading(false, loadingButton));
   closePopup(evt.target.closest(".popup"));
   formNewCard.reset();
 }
@@ -136,12 +162,15 @@ function handlNewCard(evt) {
 // обработчик сабмита формы редактирования профиля
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-
+  const button = profileForm.querySelector(".popup__button");
+  renderLoading(true, button);
   reloadProfile(nameInput.value, jobInput.value)
     .then((res) => {
       profileTitle.textContent = res.name;
       profileJob.textContent = res.about;
-  })
+    })
+    .catch((error) => console.log(`Error: ${error}`))
+    .finally(() => renderLoading(false, button));
   closePopup(profileEditPopup);
 }
 
@@ -184,15 +213,48 @@ addNewPostButton.addEventListener("click", function () {
   clearValidation(formCreateCard, config);
 
   const inputList = Array.from(formNewCard.querySelectorAll(".popup__input"));
-  const buttonElement = formNewCard.querySelector(".popup__button"); 
-  toggleButtonState(inputList, buttonElement, config); 
+  const buttonElement = formNewCard.querySelector(".popup__button");
+  toggleButtonState(inputList, buttonElement, config);
 
   popupOpen(profileNewCard);
 });
+
+avatarEditButton.addEventListener("click", function () {
+  formAvatar.reset();
+  clearValidation(formAvatar, config);
+
+  const inputList = Array.from(avatarForm.querySelectorAll(".popup__input"));
+  const buttonElement = avatarForm.querySelector(".popup__button");
+  toggleButtonState(inputList, buttonElement, config);
+
+  popupOpen(profileAvatarPopup);
+});
+
+function handleAvatarFormSubmit(evt) {
+  evt.preventDefault();
+
+  const avatarLinkInput = avatarForm.querySelector(".popup__input");
+  const avatarLink = avatarLinkInput.value;
+  const button = avatarForm.querySelector(".popup__button");
+  renderLoading(true, button);
+  updateAvatar(avatarLink)
+    .then((res) => {
+      titleImage.src = res.avatar;
+      closePopup(profileAvatarPopup);
+      avatarForm.reset();
+    })
+    .catch((error) => console.log(`Error: ${error}`))
+    .finally(() => {
+      renderLoading(false, button);
+    });
+}
+
+avatarForm.addEventListener("submit", handleAvatarFormSubmit);
 
 formNewCard.addEventListener("submit", handlNewCard);
 
 handlOverlayClose(profileEditPopup);
 handlOverlayClose(profileNewCard);
+handlOverlayClose(profileAvatarPopup);
 handlOverlayClose(imageCard);
 enableValidation(config);
