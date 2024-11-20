@@ -31,36 +31,42 @@ function createCard(
   const isLiked = cardData.likes.some((like) => like._id === currentUserId);
   if (isLiked) {
     likeButton.classList.add("card__like-button_is-active");
-  } else {
-    likeButton.classList.remove("card__like-button_is-active");
   }
+  
+  const likeCalback = (cardId, likeButton, likeCount) => {
+    const likeMethod = likeButton.classList.contains("card__like-button_is-active") ? unlikeCard : likeCard;
+    likeMethod(cardId)
+      .then((data) => {
+        likeButton.classList.toggle("card__like-button_is-active");
+        likeCount.textContent = data.likes.length;
+      })
+      .catch((error) => {
+        console.log(`Error: ${error.status}`);
+      });
+  };
+
   likeButton.addEventListener("click", () => {
-    if (likeButton.classList.contains("card__like-button_is-active")) {
-      unlikeCard(cardId).then((data) => {
-        likeButton.classList.remove("card__like-button_is-active");
-        likeCount.textContent = data.likes.length;
-      });
-    } else {
-      likeCard(cardId).then((data) => {
-        likeButton.classList.add("card__like-button_is-active");
-        likeCount.textContent = data.likes.length;
-      });
-    }
+    likeCalback(cardId, likeButton, likeCount);
   });
 
+const deleteButtonCalback = (cardId, cardElement) => {
+    deleteCard(cardId)
+      .then(() => {
+        cardElement.remove()
+      })
+      .catch((error) => {
+        console.log(`Error: ${error.status}`);
+      });
+    }
   if (currentUserId !== ownerId) {
     deleteButton.remove();
-  } else {
+  }
+  else {
     deleteButton.addEventListener("click", () => {
-      deleteCard(cardId)
-        .then(() => {
-          cardElement.remove();
-        })
-        .catch((error) => {
-          console.log(`Error: ${error.status}`);
-        });
+      deleteButtonCalback(cardId, cardElement);
     });
   }
   return cardElement;
 }
+
 export { createCard };

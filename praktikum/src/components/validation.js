@@ -22,30 +22,16 @@ const hideInputError = (formElement, inputElement, config) => {
 
 // функция валидации и показа ошибки
 const isValid = (formElement, inputElement, config) => {
-  const regex = /[^\wа-яёА-ЯЁ\-\s]/gi;
   let errorMessage = "";
-
-  if (inputElement.type === "url") {
-    if (!inputElement.validity.valid) {
-      showInputError(
-        formElement,
-        inputElement,
-        inputElement.validationMessage,
-        config
-      );
-    } else {
-      hideInputError(formElement, inputElement, config);
-    }
-  } else {
-    if (!inputElement.validity.valid) {
-      errorMessage = inputElement.validationMessage;
-      showInputError(formElement, inputElement, errorMessage, config);
-    } else if (regex.test(inputElement.value)) {
+  if (!inputElement.validity.valid) {
+    if (inputElement.validity.patternMismatch) {
       errorMessage = inputElement.dataset.errorMessage;
-      showInputError(formElement, inputElement, errorMessage, config);
     } else {
-      hideInputError(formElement, inputElement, config);
+      errorMessage = inputElement.validationMessage;
     }
+    showInputError(formElement, inputElement, errorMessage, config);
+  } else {
+    hideInputError(formElement, inputElement, config);
   }
 };
 
@@ -71,6 +57,8 @@ function clearValidation(formElement, config) {
   inputElements.forEach((inputElement) => {
     hideInputError(formElement, inputElement, config);
   });
+  const buttonElement = formElement.querySelector(config.submitButtonSelector);
+  toggleButtonState(inputElements, buttonElement, config);
 }
 
 // функция валидации
@@ -82,12 +70,9 @@ const enableValidation = (config) => {
 };
 
 // функция блокировки кнопки
-const hasInvalidInput = (inputList, config) => {
+const hasInvalidInput = (inputList) => {
   return inputList.some((inputElement) => {
-    return (
-      !inputElement.validity.valid ||
-      inputElement.classList.contains(config.inputErrorClass)
-    );
+    return !inputElement.validity.valid;
   });
 };
 
@@ -102,4 +87,4 @@ const toggleButtonState = (inputList, buttonElement, config) => {
   }
 };
 
-export { enableValidation, clearValidation, toggleButtonState };
+export { enableValidation, clearValidation };

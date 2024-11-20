@@ -1,10 +1,6 @@
 import { createCard } from "./components/card.js"; //likeCard
 import { popupOpen, closePopup } from "./components/modal.js";
-import {
-  enableValidation,
-  clearValidation,
-  toggleButtonState,
-} from "./components/validation.js";
+import { enableValidation, clearValidation } from "./components/validation.js";
 
 import {
   profileInfo,
@@ -30,7 +26,7 @@ const config = {
 
 //---------------------------------------
 const formEditCard = document.forms["edit-profile"]; // переменная отвечающая за форму редактирования профиля
-const formCreateCard = document.forms["new-place"];
+const formNewCard = document.forms["new-place"];
 
 const formAvatar = document.forms["new-avatar"];
 
@@ -51,13 +47,10 @@ const profileAvatarPopup = document.querySelector(".popup_type_avatar");
 const avatarEditButton = document.querySelector(".profile__edit-icon");
 const avatarForm = profileAvatarPopup.querySelector(".popup__form");
 
-// переменная формы для создания новой карточки
-const formNewCard = document.forms["new-place"];
-
 const nameNewCard = document.querySelector(".popup__input_type_card-name");
 const linkNewCard = document.querySelector(".popup__input_type_url");
 
-//SUBMIT
+// SUBMIT
 // Находим форму в DOM
 const profileForm = profileEditPopup.querySelector(".popup__form");
 const nameInput = document.querySelector(".popup__input_type_name");
@@ -76,8 +69,6 @@ const titleName = document.querySelector(".profile__title");
 const titleJob = document.querySelector(".profile__description");
 
 let currentUserId;
-
-//-----------------------------------------
 
 Promise.all([profileInfo(), newCards()])
   .then(([res, cardsArray]) => {
@@ -107,14 +98,8 @@ Promise.all([profileInfo(), newCards()])
   })
   .catch((error) => console.log(`Error: ${error.message}`));
 
-//--------------------------------------
-
 function renderLoading(isLoading, button) {
-  if (isLoading) {
-    button.textContent = "Сохранение...";
-  } else {
-    button.textContent = "Сохранить";
-  }
+  button.textContent = isLoading ? "Сохранение..." : "Сохранить";
 }
 
 //Функция открывания изображения
@@ -151,7 +136,6 @@ function handlNewCard(evt) {
       );
       cardList.prepend(newCard);
       closePopup(profileNewCard);
-      formNewCard.reset();
     })
     .catch((error) => console.log(`Error: ${error.message}`))
     .finally(() => renderLoading(false, loadingButton));
@@ -199,10 +183,6 @@ editButton.addEventListener("click", function () {
   jobInput.value = profileJob.textContent;
 
   clearValidation(formEditCard, config);
-
-  const inputList = Array.from(profileForm.querySelectorAll(".popup__input"));
-  const buttonElement = profileForm.querySelector(".popup__button");
-  toggleButtonState(inputList, buttonElement, config);
   popupOpen(profileEditPopup);
 });
 
@@ -210,23 +190,13 @@ editButton.addEventListener("click", function () {
 addNewPostButton.addEventListener("click", function () {
   formNewCard.reset();
 
-  clearValidation(formCreateCard, config);
-
-  const inputList = Array.from(formNewCard.querySelectorAll(".popup__input"));
-  const buttonElement = formNewCard.querySelector(".popup__button");
-  toggleButtonState(inputList, buttonElement, config);
-
+  clearValidation(formNewCard, config);
   popupOpen(profileNewCard);
 });
 
 avatarEditButton.addEventListener("click", function () {
   formAvatar.reset();
   clearValidation(formAvatar, config);
-
-  const inputList = Array.from(avatarForm.querySelectorAll(".popup__input"));
-  const buttonElement = avatarForm.querySelector(".popup__button");
-  toggleButtonState(inputList, buttonElement, config);
-
   popupOpen(profileAvatarPopup);
 });
 
