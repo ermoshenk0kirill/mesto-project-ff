@@ -85,9 +85,8 @@ Promise.all([profileInfo(), newCards()])
           res.link,
           res.name,
           res.likes,
-          deleteCard,
-          likeCard,
-          unlikeCard,
+          deleteButtonCalback,
+          likeCalback,
           popupImageOpen,
           currentUserId,
           res.owner._id,
@@ -126,9 +125,8 @@ function handlNewCard(evt) {
         data.link,
         data.name,
         data.likes,
-        deleteCard,
-        likeCard,
-        unlikeCard,
+        deleteButtonCalback,
+        likeCalback,
         popupImageOpen,
         currentUserId,
         data.owner._id,
@@ -218,6 +216,28 @@ function handleAvatarFormSubmit(evt) {
       renderLoading(false, button);
     });
 }
+
+const likeCalback = (cardId, likeButton, likeCount) => {
+  const likeMethod = likeButton.classList.contains("card__like-button_is-active") ? unlikeCard : likeCard;
+  likeMethod(cardId)
+    .then((data) => {
+      likeButton.classList.toggle("card__like-button_is-active");
+      likeCount.textContent = data.likes.length;
+    })
+    .catch((error) => {
+      console.log(`Error: ${error.status}`);
+    });
+};
+
+const deleteButtonCalback = (cardId, cardElement) => {
+  deleteCard(cardId)
+  .then(() => {
+    cardElement.remove()
+  })
+  .catch((error) => {
+      console.log(`Error: ${error.status}`);
+    });
+  }
 
 avatarForm.addEventListener("submit", handleAvatarFormSubmit);
 
